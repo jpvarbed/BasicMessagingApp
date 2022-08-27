@@ -1,0 +1,10 @@
+node_modules
+opt
+snapc_configs
+tmp
+**/*.d.ts
+!**/globals.d.ts
+*_bin.js
+
+# Config files that use TypeScript
+**/playwright.config.ts

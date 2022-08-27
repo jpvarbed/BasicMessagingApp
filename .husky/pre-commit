@@ -1,0 +1,31 @@
+#!/bin/sh
+here="$(dirname "$0")"
+
+. "$here/_/husky.sh"
+
+set -e
+cd "$here"/..
+
+# If volta is installed, then use that.
+# Volta adds about 10ms of overhead, while nvm adds about 850ms.
+if [ -e $HOME/.volta/bin/node ] && [ -e $HOME/.volta/bin/yarn ]; then
+  export PATH="$HOME/.volta/bin:$PATH"
+else
+  export NVM_DIR="$HOME/.nvm"
+  # sourcing nvm.sh can result in exit code 3: https://github.com/nvm-sh/nvm/issues/1985
+  set +e
+  # this takes 300ms
+  . "$NVM_DIR/nvm.sh"
+  # this takes 550ms
+  nvm use
+  set -e
+fi
+
+# running through yarn or npx adds 400ms -- avoid that
+node_modules/.bin/pretty-quick --staged
+
+# Opt-in because this is pretty slow, even though it only runs on changed files
+if [ ! -z "$PRE_COMMIT_LINT" ]; then
+  echo "Running pre-commit lint"
+  node_modules/.bin/lint-staged
+fi
