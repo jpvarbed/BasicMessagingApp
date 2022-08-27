@@ -14,8 +14,10 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
 import {ConversationWindow} from './ConversationWindow';
 import {HomeScreen} from './HomeScreen';
+import {RootStackParamList} from './types';
 
-const Stack = createNativeStackNavigator();
+//
+const Stack = createNativeStackNavigator<RootStackParamList>();
 const App = () => {
   return (
     <NavigationContainer>
@@ -24,6 +26,7 @@ const App = () => {
         <Stack.Screen
           name="ConversationWindow"
           component={ConversationWindow}
+          initialParams={{userId: 'Jason', conversationName: 'Buddies'}}
         />
       </Stack.Navigator>
     </NavigationContainer>
