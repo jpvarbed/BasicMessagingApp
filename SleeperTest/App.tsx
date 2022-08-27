@@ -28,6 +28,7 @@ import {
   LearnMoreLinks,
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
+import {ConversationWindow} from './ConversationWindow';
 
 const Section: React.FC<
   PropsWithChildren<{
@@ -96,14 +97,6 @@ function HomeScreen() {
         </View>
       </ScrollView>
     </SafeAreaView>
-  );
-}
-
-function ConversationWindow() {
-  return (
-    <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-      <Text>Details Screen</Text>
-    </View>
   );
 }
 
