@@ -1,14 +1,12 @@
-import {useNavigation, useRoute} from '@react-navigation/native';
+import {useRoute} from '@react-navigation/native';
 import React from 'react';
 import {
-  Button,
   SafeAreaView,
   SectionList,
   SectionListData,
   SectionListRenderItemInfo,
   StatusBar,
   StyleSheet,
-  Text,
   View,
 } from 'react-native';
 import {loadMessages} from '../actions/conversation';

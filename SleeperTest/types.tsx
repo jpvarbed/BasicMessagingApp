@@ -21,11 +21,21 @@ export type ConversationWindowRouteProp = RouteProp<
   'ConversationWindow'
 >;
 
-export interface Conversation {
+// Store by id so that you may update a message if it changes.
+export type MessagesById = Map<number, Message>;
+
+export type ConversationsById = Map<string, ConversationWithMessages>;
+
+export interface ConversationWithMessages {
   // in practice you might want a server & local id
   conversationId: string;
   // putting all the metadata in
   conversationName: string;
+
+  // all of the messages in the conversation
+  messages: MessagesById;
+
+  nextMessageId: number;
 }
 
 export interface Message {
@@ -44,6 +54,7 @@ export interface LocalSendRequest {
   content: MessageContent;
   messageType: MessageType;
   conversationId: string;
+  senderId: string;
 }
 
 export enum MessageType {
