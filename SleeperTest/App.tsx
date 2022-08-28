@@ -12,8 +12,8 @@ import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
-import {ConversationWindow} from './ConversationWindow';
-import {HomeScreen} from './HomeScreen';
+import {ConversationWindow} from './Screens/ConversationWindow';
+import {HomeScreen} from './Screens/HomeScreen';
 import {RootStackParamList} from './types';
 
 //
