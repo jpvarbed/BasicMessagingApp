@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {
-  Button,
+  NativeSyntheticEvent,
   SafeAreaView,
   StyleSheet,
   Text,
@@ -10,6 +10,31 @@ import {
 } from 'react-native';
 import {LocalSendRequest, MessageType} from '../types';
 import {LineBorder} from './LineBorder';
+import {
+  GiphySDK,
+  GiphyGridView,
+  GiphyContent,
+  GiphyMedia,
+} from '@giphy/react-native-sdk';
+
+// const gifURL = 'https://api.giphy.com/v1/gifs/trending';
+// const GIF_LIMIT = 50;
+// const fetchURL =
+//   gifURL + '?api_key=' + APIKEY.toLowerCase() + '&limit=' + GIF_LIMIT;
+
+// async function fetchTrending() {
+//   try {
+//     console.log(fetchURL);
+//     let response = await fetch(fetchURL, {});
+//     let json = await response.json();
+//     return json;
+//   } catch (error) {
+//     console.error(error);
+//   }
+// }
+
+const APIKEY = '76792192255c42c3a11c58ea1acfbe27';
+GiphySDK.configure({apiKey: APIKEY});
 
 /*
 Handles input of new message data.
@@ -21,8 +46,9 @@ export function SendBox(props: {
   conversationName: string;
   sendMessage: (sendRequest: LocalSendRequest) => void;
 }) {
-  const textBoxPrompt = 'Send a message to... ' + props.conversationName;
+  //const textBoxPrompt = 'Send a message to... ' + props.conversationName;
   const [input, setInput] = useState('');
+  const [showGiphy, setShowGiphy] = useState(false);
 
   const inputText = (text: string) => {
     setInput(text);
@@ -44,10 +70,40 @@ export function SendBox(props: {
     props.sendMessage(sendRequest);
   };
 
-  const gifHit = () => {};
+  const gifHit = () => {
+    setShowGiphy(!showGiphy);
+  };
+
+  const gifChosen = (
+    e: NativeSyntheticEvent<{
+      media: GiphyMedia;
+    }>,
+  ) => {
+    setShowGiphy(false);
+    const mediaUrl = e.nativeEvent.media.url;
+    const content = {mediaUrl: mediaUrl};
+    const conversationId = props.conversationId;
+    const messageType = MessageType.giphyGif;
+    const sendRequest = {
+      content: content,
+      conversationId: conversationId,
+      messageType: messageType,
+      senderId: props.userId,
+      timestampMS: Date.now(),
+    };
+    props.sendMessage(sendRequest);
+  };
 
   return (
     <SafeAreaView>
+      {showGiphy && (
+        <GiphyGridView
+          content={GiphyContent.trendingGifs()}
+          cellPadding={3}
+          style={{height: 400}}
+          onMediaSelect={gifChosen}
+        />
+      )}
       <View style={styles.container}>
         <LineBorder />
         <View style={styles.sendBox}>

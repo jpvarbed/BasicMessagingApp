@@ -787,6 +787,19 @@
     minimatch "^3.0.4"
     strip-json-comments "^3.1.1"
 
+"@giphy/js-types@^4.2.1":
+  version "4.2.1"
+  resolved "https://registry.yarnpkg.com/@giphy/js-types/-/js-types-4.2.1.tgz#c0946746c767f00c267ba7b10af6512be87ed3cc"
+  integrity sha512-Ii+TvBhQsDHaeS79Y/dSqJTCeH3TirHv9DpbuIzxJ2VDKpsXVuIMrxAybwQ7Ve/mF+kjvEiL7TXtrz9Sc8Zxeg==
+
+"@giphy/react-native-sdk@1.9.0":
+  version "1.9.0"
+  resolved "https://registry.yarnpkg.com/@giphy/react-native-sdk/-/react-native-sdk-1.9.0.tgz#4e32aafca9c5c4ac35f38ff37b3d730c2c52804f"
+  integrity sha512-l7C4d/fVDlXlabxOXcBr88NnJ0+1pylqGgiESA/H2kJTZE9nISqdRJdA7vuJYjEkhCfeJhZxWkjHs873JJpJwg==
+  dependencies:
+    "@giphy/js-types" "^4.2.1"
+    type-fest "^2.13.1"
+
 "@hapi/hoek@^9.0.0":
   version "9.3.0"
   resolved "https://registry.yarnpkg.com/@hapi/hoek/-/hoek-9.3.0.tgz#8368869dcb735be2e7f5cb7647de78e167a251fb"
@@ -6833,6 +6846,11 @@ type-fest@^0.8.1:
   version "0.8.1"
   resolved "https://registry.yarnpkg.com/type-fest/-/type-fest-0.8.1.tgz#09e249ebde851d3b1e48d27c105444667f17b83d"
   integrity sha512-4dbzIzqvjtgiM5rw1k5rEHtBANKmdudhGyBEajN01fEyhaAIhsoKNy6y7+IN93IfpFtwY9iqi7kD+xwKhQsNJA==
+
+type-fest@^2.13.1:
+  version "2.19.0"
+  resolved "https://registry.yarnpkg.com/type-fest/-/type-fest-2.19.0.tgz#88068015bb33036a598b952e55e9311a60fd3a9b"
+  integrity sha512-RAH822pAdBgcNMAfWnCBU3CFZcfZ/i1eZjwFU/dsLKumyuuP3niueg2UAukXYF0E2AAoc82ZSSf9J0WQBinzHA==
 
 typedarray-to-buffer@^3.1.5:
   version "3.1.5"
