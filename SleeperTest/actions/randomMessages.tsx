@@ -18,8 +18,8 @@ export function randomTextMessage(
   timeIndex: number,
 ): Message {
   const rand = Math.random();
-  const peopleIndex = PEOPLE.length * rand;
-  const textInputIndex = TEXT_INPUT.length * rand;
+  const peopleIndex = Math.round(PEOPLE.length * rand);
+  const textInputIndex = Math.round(TEXT_INPUT.length * rand);
   return {
     messageId: timeIndex,
     conversationId: conversationId,

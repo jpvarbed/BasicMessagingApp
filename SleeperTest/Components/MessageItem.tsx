@@ -6,6 +6,7 @@ import {Message} from '../types';
 export function MessageItem(props: {message: Message}) {
   return (
     <View>
+      <Text>Test</Text>
       <Text>{props.message.content.text}</Text>
     </View>
   );

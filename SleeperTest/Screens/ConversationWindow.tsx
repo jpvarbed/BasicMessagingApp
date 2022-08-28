@@ -71,13 +71,14 @@ export function buildMessageGroups(
 
 export function ConversationWindow() {
   const route = useRoute<ConversationWindowRouteProp>();
-  const navigation = useNavigation();
   const userId = route.params.userId;
   const conversationId = route.params.conversationName;
   // todo real time update of messages
   const messages = loadMessages(conversationId);
+  console.log(messages.length);
 
   const groups = buildMessageGroups(messages);
+  console.log('groups' + groups.length);
 
   const renderMessage = (
     item: SectionListRenderItemInfo<Message, SectionListMessageGroup>,
@@ -96,22 +97,22 @@ export function ConversationWindow() {
     );
   };
 
-  const keyExtractor = (item: Message): string => {
-    return item.messageId.toString();
+  const keyExtractor = (item: Message, index: number): string => {
+    return item.messageId.toString() + index.toString();
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-        <Text>{route.params.userId}</Text>
+      <View>
         <SectionList
           sections={groups}
           renderItem={renderMessage}
           renderSectionHeader={renderSection}
           keyExtractor={keyExtractor}
         />
+      </View>
+      <View style={styles.sendBox}>
         <SendBox conversationId={conversationId} userId={userId} />
-        <Button title="Go back" onPress={() => navigation.goBack()} />
       </View>
     </SafeAreaView>
   );
@@ -135,5 +136,10 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
+  },
+  sendBox: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    marginBottom: 20,
   },
 });
