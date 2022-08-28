@@ -1,6 +1,7 @@
 import {RouteProp} from '@react-navigation/native';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import type {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import {ImageRequireSource} from 'react-native';
 
 // We have just two pages, Home & Conversation Window.
 export type RootStackParamList = {
@@ -42,7 +43,7 @@ export interface Message {
   messageId: number;
   content: MessageContent;
   messageType: MessageType;
-  senderId: string;
+  senderId: number;
   conversationId: string;
   timestampMS: number;
 }
@@ -54,7 +55,7 @@ export interface LocalSendRequest {
   content: MessageContent;
   messageType: MessageType;
   conversationId: string;
-  senderId: string;
+  senderId: number;
 }
 
 export enum MessageType {
@@ -72,7 +73,8 @@ export interface MessageContent {
 }
 
 export interface User {
-  userId: string;
+  // UUID is best but number is easier.
+  userId: number;
   displayName: string;
-  avatarURL: string;
+  avatarURL: ImageRequireSource;
 }

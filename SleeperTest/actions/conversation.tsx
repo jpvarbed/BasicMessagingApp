@@ -9,9 +9,9 @@ const NUMBER_OF_MESSAGES = 5;
 export function loadMessages(conversationId: string): Message[] {
   const firstMessages = initialMessages(conversationId, NUMBER_OF_MESSAGES);
   for (const message of firstMessages) {
-    console.log(message.content.text);
-    console.log(message.senderId);
-    console.log(message.timestampMS);
+    console.log('text' + message.content.text);
+    console.log('senderId' + message.senderId);
+    console.log('ts' + message.timestampMS);
   }
   return firstMessages;
 }

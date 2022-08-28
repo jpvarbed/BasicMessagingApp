@@ -1,7 +1,8 @@
+import {USERS} from '../store/user';
 import {Message, MessageType} from '../types';
 
 // TODO use https://www.npmjs.com/package/random-seed https://stackoverflow.com/questions/521295/seeding-the-random-number-generator-in-javascript so i can recreate
-const PEOPLE = ['Jason', 'Dan', 'Alek', 'Sofia'];
+
 const TEXT_INPUT = [
   'Awesome',
   'Definitely second round',
@@ -18,12 +19,12 @@ export function randomTextMessage(
   timeIndex: number,
 ): Message {
   const rand = Math.random();
-  const peopleIndex = Math.round(PEOPLE.length * rand);
+  const peopleIndex = Math.round((USERS.size - 1) * rand);
   const textInputIndex = Math.round(TEXT_INPUT.length * rand);
   return {
     messageId: timeIndex,
     conversationId: conversationId,
-    senderId: PEOPLE[peopleIndex],
+    senderId: USERS.get(peopleIndex)!.userId,
     content: {text: TEXT_INPUT[textInputIndex]},
     messageType: MessageType.text,
     timestampMS: TIMES[timeIndex],

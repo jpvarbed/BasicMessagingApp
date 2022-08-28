@@ -17,7 +17,7 @@ import {tsToDateString} from '../helpers';
 import {ConversationWindowRouteProp, Message} from '../types';
 
 export type SectionListMessageGroup = {
-  senderId: string; // Should this be user?
+  senderId: number; // Should this be user?
   dateString: string;
   readonly data: Message[];
 };

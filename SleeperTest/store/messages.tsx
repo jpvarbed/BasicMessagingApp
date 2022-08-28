@@ -1,6 +1,5 @@
 import {immer} from 'zustand/middleware/immer';
-import create, {StateCreator} from 'zustand';
-import {Mutate, StoreApi} from 'zustand/vanilla';
+import create from 'zustand';
 import {subscribeWithSelector} from 'zustand/middleware';
 import {LocalSendRequest, Message, ConversationsById} from '../types';
 import {createSelector} from 'reselect';
@@ -37,13 +36,8 @@ function createMessageFromRequest(
   };
 }
 
-// https://github.com/pmndrs/zustand/issues/930
-type Store = Mutate<
-  StoreApi<MessageStore>,
-  [['zustand/subscribeWithSelector', never], ['zustand/immer', never]]
->;
-
-export const useStore: Store = create<MessageStore>()(
+// https://npm.io/package/zustand
+export const useStore = create<MessageStore>()(
   subscribeWithSelector(
     immer((set, get) => ({
       message: {
@@ -76,24 +70,28 @@ export const useStore: Store = create<MessageStore>()(
   ),
 );
 
+// Get specific conversation from store
 export const conversationWithMessagesSelector = (
   state: MessageStore,
   conversationId: string,
 ) => state.message.conversations.get(conversationId);
 
+// Get message from specific conversation.
+// With subscribe & create selector, only have to recalculate when input changes
 export const getMessagesSelector = (conversationId: string) =>
   createSelector(
     (state: MessageStore) =>
       conversationWithMessagesSelector(state, conversationId),
     conversationState =>
-      conversationState ? conversationState.messages.values : [],
+      conversationState ? Array.from(conversationState.messages.values()) : [],
   );
 
 // Fetch all messages. Ignore pagination. Would pass back a fcn to keep going.
 export function useMessages(conversationId: string): Message[] {
-  // const messagesSelector = useMemo(
-  //   () => getMessagesSelector(conversationId),
-  //   [conversationId],
-  // );
-  return [] as Message[];
+  const messagesSelector = useMemo(
+    () => getMessagesSelector(conversationId),
+    [conversationId],
+  );
+  const messages = useStore(messagesSelector);
+  return messages;
 }
