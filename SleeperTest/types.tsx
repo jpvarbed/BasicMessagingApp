@@ -6,7 +6,7 @@ import {ImageRequireSource} from 'react-native';
 // We have just two pages, Home & Conversation Window.
 export type RootStackParamList = {
   Home: undefined;
-  ConversationWindow: {userId: string; conversationName: string};
+  ConversationWindow: {userId: number; conversationName: string};
 };
 
 // Type used to navigate for Home
@@ -25,7 +25,9 @@ export type ConversationWindowRouteProp = RouteProp<
 // Store by id so that you may update a message if it changes.
 export type MessagesById = Map<number, Message>;
 
-export type ConversationsById = Map<string, ConversationWithMessages>;
+export type ConversationId = string;
+export type ConversationsById = Map<ConversationId, ConversationWithMessages>;
+export type ConversationsByName = Map<string, ConversationId>;
 
 export interface ConversationWithMessages {
   // in practice you might want a server & local id
@@ -56,6 +58,7 @@ export interface LocalSendRequest {
   messageType: MessageType;
   conversationId: string;
   senderId: number;
+  timestampMS: number;
 }
 
 export enum MessageType {

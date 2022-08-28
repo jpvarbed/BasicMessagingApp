@@ -6,7 +6,6 @@ import {USERS} from '../store/user';
 export function MessageGroup(props: {senderId: number; dateString: string}) {
   // todo add avatar, sender display name etc
   const senderId = props.senderId;
-  console.log('senderId is' + senderId);
   const user = USERS.get(senderId)!;
   return (
     <View style={styles.groupBar}>

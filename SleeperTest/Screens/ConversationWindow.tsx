@@ -1,5 +1,5 @@
 import {useRoute} from '@react-navigation/native';
-import React from 'react';
+import React, {useEffect} from 'react';
 import {
   SafeAreaView,
   SectionList,
@@ -10,11 +10,17 @@ import {
   View,
 } from 'react-native';
 import {loadMessages} from '../actions/conversation';
+import {randomMessageSend} from '../actions/randomMessages';
 import {MessageGroup} from '../Components/MessageGroup';
 import {MessageItem} from '../Components/MessageItem';
 import {SendBox} from '../Components/SendBox';
 import {tsToDateString} from '../helpers';
-import {ConversationWindowRouteProp, Message} from '../types';
+import {MessageStore, useMessages, useStore} from '../store/messages';
+import {ConversationWindowRouteProp, LocalSendRequest, Message} from '../types';
+
+const sendMessageSelector = (state: MessageStore) => state.message.sendMessage;
+const conversationsByNameSelector = (state: MessageStore) =>
+  state.message.conversationNameToId;
 
 export type SectionListMessageGroup = {
   senderId: number; // Should this be user?
@@ -70,9 +76,27 @@ export function buildMessageGroups(
 export function ConversationWindow() {
   const route = useRoute<ConversationWindowRouteProp>();
   const userId = route.params.userId;
-  const conversationId = route.params.conversationName;
-  // todo real time update of messages
-  const messages = loadMessages(conversationId);
+  const conversationName = route.params.conversationName;
+  const sendMessage = useStore(sendMessageSelector);
+  const conversationNameToId = useStore(conversationsByNameSelector);
+  const conversationId = conversationNameToId.get(conversationName)!;
+
+  console.log(
+    'Enter conversation: ' + conversationName + ' id ' + conversationId,
+  );
+
+  const doSend = (sendRequest: LocalSendRequest) => {
+    sendMessage(sendRequest);
+  };
+
+  useEffect(() => {
+    const sendRandomMessages = setInterval(() => {
+      sendMessage(randomMessageSend(conversationId));
+    }, 5000);
+    return () => clearInterval(sendRandomMessages);
+  }, [conversationId, sendMessage]);
+
+  const messages = useMessages(conversationId);
   console.log(messages.length);
 
   const groups = buildMessageGroups(messages);
@@ -110,7 +134,11 @@ export function ConversationWindow() {
         />
       </View>
       <View style={styles.sendBox}>
-        <SendBox conversationId={conversationId} userId={userId} />
+        <SendBox
+          conversationId={conversationId}
+          userId={userId}
+          sendMessage={doSend}
+        />
       </View>
     </SafeAreaView>
   );

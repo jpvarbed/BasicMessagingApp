@@ -26,7 +26,7 @@ const App = () => {
         <Stack.Screen
           name="ConversationWindow"
           component={ConversationWindow}
-          initialParams={{userId: 'Jason', conversationName: 'Buddies'}}
+          initialParams={{userId: 0, conversationName: 'Buddies'}}
         />
       </Stack.Navigator>
     </NavigationContainer>

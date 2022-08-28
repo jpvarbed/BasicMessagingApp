@@ -4,35 +4,40 @@ import {
   SafeAreaView,
   ScrollView,
   StatusBar,
-  Text,
   TextInput,
   View,
 } from 'react-native';
+import {MessageStore, useStore} from '../store/messages';
 
 import {HomeScreenProp} from '../types';
 
+const addConversationSelector = (state: MessageStore) =>
+  state.message.addConversation;
+
 export function HomeScreen({navigation}: HomeScreenProp) {
-  const [userId, setUserId] = useState('UserId');
-  const [conversationName, setConversationName] = useState('ConversationName');
+  const [conversationName, setConversationName] = useState('Buddies');
+  const addConversation = useStore(addConversationSelector);
+
+  const createConversationAndGo = () => {
+    addConversation(conversationName);
+    navigation.navigate('ConversationWindow', {
+      userId: 0,
+      conversationName: conversationName,
+    });
+  };
+
   return (
     <SafeAreaView>
       <StatusBar barStyle={'light-content'} />
       <ScrollView contentInsetAdjustmentBehavior="automatic">
         <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-          <Text>Home Screen</Text>
-          <TextInput value={userId} onChangeText={text => setUserId(text)} />
           <TextInput
             value={conversationName}
             onChangeText={text => setConversationName(text)}
           />
           <Button
             title="Go to Conversation"
-            onPress={() =>
-              navigation.navigate('ConversationWindow', {
-                userId: userId,
-                conversationName: conversationName,
-              })
-            }
+            onPress={createConversationAndGo}
           />
         </View>
       </ScrollView>

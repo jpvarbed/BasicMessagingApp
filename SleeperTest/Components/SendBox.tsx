@@ -1,16 +1,15 @@
 import React, {useState} from 'react';
 import {Button, SafeAreaView, ScrollView, TextInput, View} from 'react-native';
-import {MessageType, sendMessage} from '../actions/conversation';
+import {LocalSendRequest, MessageType} from '../types';
 
 /*
 Handles input of new message data.
 */
-export function SendBox({
-  userId,
-  conversationId,
-}: {
-  userId: string;
+//(sendRequest: LocalSendRequest)
+export function SendBox(props: {
+  userId: number;
   conversationId: string;
+  sendMessage: (sendRequest: LocalSendRequest) => void;
 }) {
   const [input, setInput] = useState('message...');
 
@@ -19,11 +18,18 @@ export function SendBox({
   };
 
   const hitSend = () => {
-    sendMessage({
+    console.log('hit send' + input);
+    const content = {text: input};
+    const conversationId = props.conversationId;
+    const messageType = MessageType.text;
+    const sendRequest = {
+      content: content,
       conversationId: conversationId,
-      content: {text: input},
-      messageType: MessageType.text,
-    });
+      messageType: messageType,
+      senderId: props.userId,
+      timestampMS: Date.now(),
+    };
+    props.sendMessage(sendRequest);
   };
 
   return (
