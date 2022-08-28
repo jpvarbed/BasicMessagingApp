@@ -1,16 +1,17 @@
-import {useRoute} from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import React, {useEffect} from 'react';
 import {
+  KeyboardAvoidingView,
+  Platform,
   SafeAreaView,
   SectionList,
   SectionListData,
   SectionListRenderItemInfo,
-  StatusBar,
   StyleSheet,
   View,
 } from 'react-native';
-import {loadMessages} from '../actions/conversation';
 import {randomMessageSend} from '../actions/randomMessages';
+import {ConversationHeader} from '../Components/ConversationHeader';
 import {MessageGroup} from '../Components/MessageGroup';
 import {MessageItem} from '../Components/MessageItem';
 import {SendBox} from '../Components/SendBox';
@@ -18,11 +19,14 @@ import {tsToDateString} from '../helpers';
 import {MessageStore, useMessages, useStore} from '../store/messages';
 import {ConversationWindowRouteProp, LocalSendRequest, Message} from '../types';
 
+import sectionListGetItemLayout from 'react-native-section-list-get-item-layout';
+
+const RANDOM_MESSAGE_TIME_MS = 15000;
 const sendMessageSelector = (state: MessageStore) => state.message.sendMessage;
 const conversationsByNameSelector = (state: MessageStore) =>
   state.message.conversationNameToId;
 
-export type SectionListMessageGroup = {
+type SectionListMessageGroup = {
   senderId: number; // Should this be user?
   dateString: string;
   readonly data: Message[];
@@ -47,9 +51,7 @@ function makeGroupFromMessage(message: Message): SectionListMessageGroup {
 
 // Create the message groups for the conversation
 // group by send and then order
-export function buildMessageGroups(
-  messages: Message[],
-): SectionListMessageGroup[] {
+function buildMessageGroups(messages: Message[]): SectionListMessageGroup[] {
   if (messages.length === 0) {
     return [];
   }
@@ -73,7 +75,10 @@ export function buildMessageGroups(
   return groups;
 }
 
+// should i use https://yarnpkg.com/package/react-native-section-list-get-item-layout
+// or super grid https://yarnpkg.com/package/react-native-super-grid
 export function ConversationWindow() {
+  const nav = useNavigation();
   const route = useRoute<ConversationWindowRouteProp>();
   const userId = route.params.userId;
   const conversationName = route.params.conversationName;
@@ -92,7 +97,7 @@ export function ConversationWindow() {
   useEffect(() => {
     const sendRandomMessages = setInterval(() => {
       sendMessage(randomMessageSend(conversationId));
-    }, 5000);
+    }, RANDOM_MESSAGE_TIME_MS);
     return () => clearInterval(sendRandomMessages);
   }, [conversationId, sendMessage]);
 
@@ -125,21 +130,32 @@ export function ConversationWindow() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View>
-        <SectionList
-          sections={groups}
-          renderItem={renderMessage}
-          renderSectionHeader={renderSection}
-          keyExtractor={keyExtractor}
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+        <ConversationHeader
+          conversationName={conversationName}
+          goBack={nav.goBack}
         />
-      </View>
-      <View style={styles.sendBox}>
-        <SendBox
-          conversationId={conversationId}
-          userId={userId}
-          sendMessage={doSend}
-        />
-      </View>
+        <View style={styles.sectionList}>
+          <SectionList
+            sections={groups}
+            renderItem={renderMessage}
+            renderSectionHeader={renderSection}
+            keyExtractor={keyExtractor}
+            automaticallyAdjustKeyboardInsets={true}
+            automaticallyAdjustContentInsets={true}
+          />
+        </View>
+        <View style={styles.sendBox}>
+          <SendBox
+            conversationId={conversationId}
+            conversationName={conversationName}
+            userId={userId}
+            sendMessage={doSend}
+          />
+        </View>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
@@ -148,24 +164,15 @@ export function ConversationWindow() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: StatusBar.currentHeight,
-    marginHorizontal: 16,
+    backgroundColor: 'lightgray',
+    alignContent: 'flex-start',
   },
-  item: {
-    backgroundColor: '#f9c2ff',
-    padding: 20,
-    marginVertical: 8,
-  },
-  header: {
-    fontSize: 32,
-    backgroundColor: '#fff',
-  },
-  title: {
-    fontSize: 24,
+  sectionList: {
+    backgroundColor: 'lightcoral',
+    flex: 1,
+    marginTop: 0,
   },
   sendBox: {
-    flex: 1,
     justifyContent: 'flex-end',
-    marginBottom: 20,
   },
 });

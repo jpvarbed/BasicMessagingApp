@@ -11,9 +11,9 @@ export function MessageGroup(props: {senderId: number; dateString: string}) {
     <View style={styles.groupBar}>
       <Image style={styles.avatar} source={user.avatarURL} />
       <View style={styles.nameAndTime}>
-        <Text>{user.displayName}</Text>
+        <Text style={styles.name}>{user.displayName}</Text>
         <Text> </Text>
-        <Text>{props.dateString}</Text>
+        <Text style={styles.time}>{props.dateString}</Text>
       </View>
     </View>
   );
@@ -27,6 +27,13 @@ const styles = StyleSheet.create({
   nameAndTime: {
     flex: 1,
     flexDirection: 'row',
+    alignItems: 'center',
+  },
+  name: {
+    fontWeight: 'bold',
+  },
+  time: {
+    color: 'lightgray',
   },
   avatar: {
     width: 50,
