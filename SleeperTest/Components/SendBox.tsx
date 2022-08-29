@@ -96,7 +96,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   buttonStyle: {
+    borderWidth: 0.5,
+    borderRadius: 10,
+    overflow: 'hidden',
+    justifyContent: 'center',
+    alignItems: 'center',
     flex: 1,
+    marginRight: 3,
   },
   input: {flex: 5, fontSize: 20, color: 'black'},
   title: {

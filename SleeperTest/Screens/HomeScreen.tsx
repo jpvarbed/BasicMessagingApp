@@ -1,13 +1,12 @@
 import React, {useState} from 'react';
 import {
-  Button,
+  FlatList,
   Image,
   SafeAreaView,
-  ScrollView,
-  StatusBar,
   StyleSheet,
   Text,
   TextInput,
+  TouchableOpacity,
   View,
 } from 'react-native';
 import {MessageStore, useStore} from '../store/messages';
@@ -36,24 +35,33 @@ export function HomeScreen({navigation}: HomeScreenProp) {
         style={styles.icon}
         source={require('../resources/images/HomeScreen.png')}
       />
-      <StatusBar barStyle={'light-content'} />
-      <ScrollView contentInsetAdjustmentBehavior="automatic">
-        <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-          <TextInput
-            value={conversationName}
-            onChangeText={text => setConversationName(text)}
-          />
-          <Button
-            title="Go to Conversation"
-            onPress={createConversationAndGo}
-          />
-        </View>
-      </ScrollView>
+      <View style={styles.createConversation}>
+        <TextInput
+          style={styles.createInput}
+          value={conversationName}
+          onChangeText={text => setConversationName(text)}
+        />
+        <TouchableOpacity
+          style={styles.createButton}
+          activeOpacity={0.85}
+          onPress={createConversationAndGo}>
+          <Text>Create or Enter Conversation</Text>
+        </TouchableOpacity>
+      </View>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  createConversation: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    justifyContent: 'space-between',
+    width: '100%',
+  },
+  createButton: {borderWidth: 0.5, borderColor: 'blue'},
+  createInput: {backgroundColor: 'white', width: '50%', borderWidth: 0.5},
   safeview: {
     backgroundColor: 'lightcyan',
     flex: 1,
