@@ -1,7 +1,7 @@
 import React from 'react';
 import {Image, StyleSheet, Text, View} from 'react-native';
 import {USERS} from '../store/user';
-
+export const AVATAR_HEIGHT = 50;
 // In the real world you would want to handle sending, failed, acked, and have a wrapper for cell and content
 export function MessageGroup(props: {senderId: number; dateString: string}) {
   // todo add avatar, sender display name etc
@@ -36,8 +36,8 @@ const styles = StyleSheet.create({
     color: 'lightgray',
   },
   avatar: {
-    width: 50,
-    height: 50,
+    width: AVATAR_HEIGHT,
+    height: AVATAR_HEIGHT,
     borderRadius: 50 * 0.125,
   },
 });

@@ -9,35 +9,33 @@ export function ConversationHeader(props: {
   goBack: () => void;
 }) {
   return (
-    <SafeAreaView>
-      <View style={styles.container}>
-        <View style={styles.titleAndBack}>
-          <Button title="Back" onPress={props.goBack} />
-          <Text style={styles.title}>{props.conversationName}</Text>
-        </View>
-        <LineBorder />
+    <View style={styles.container}>
+      <View style={styles.titleAndBack}>
+        <Button title="Back" onPress={props.goBack} />
+        <Text style={styles.title}>{props.conversationName}</Text>
       </View>
-    </SafeAreaView>
+      <LineBorder />
+    </View>
   );
 }
-
+//     top: 0,
+// position: 'absolute',
 const styles = StyleSheet.create({
   container: {
     width: '100%',
-    height: 40,
-    top: 0,
-    position: 'absolute',
+    height: 50,
     backgroundColor: 'lightcyan',
   },
   titleAndBack: {
     flex: 1,
-    height: 30,
+    height: '100%',
     flexDirection: 'row',
+    alignItems: 'baseline',
+    justifyContent: 'flex-start',
   },
   title: {
     fontSize: 20,
     fontWeight: 'bold',
-    marginLeft: 16,
-    marginTop: 6,
+    marginLeft: 100,
   },
 });

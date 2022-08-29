@@ -9,12 +9,13 @@ import {
   SectionListData,
   SectionListRenderItemInfo,
   StyleSheet,
+  Text,
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
 import {randomMessageSend} from '../actions/randomMessages';
 import {ConversationHeader} from '../Components/ConversationHeader';
-import {MessageGroup} from '../Components/MessageGroup';
+import {AVATAR_HEIGHT, MessageGroup} from '../Components/MessageGroup';
 import {MEDIA_HEIGHT, MessageItem} from '../Components/MessageItem';
 import {SendBox} from '../Components/SendBox';
 import {tsToDateString} from '../helpers';
@@ -142,6 +143,7 @@ export function ConversationWindow() {
       return;
     }
     const lastMessageInLastGroup = groups[groupLength].data.length - 1;
+    console.log('scroll to ' + lastMessageInLastGroup + ' group' + groupLength);
     messageListRef.current?.scrollToLocation({
       viewPosition: 1,
       itemIndex: lastMessageInLastGroup,
@@ -165,58 +167,80 @@ export function ConversationWindow() {
         }
       }
     },
+    getSectionHeaderHeight: () => {
+      return AVATAR_HEIGHT;
+    },
   });
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.safeview}>
       <KeyboardAvoidingView
-        style={styles.container}
+        style={styles.keyboard}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
         <ConversationHeader
           conversationName={conversationName}
           goBack={nav.goBack}
         />
-        <View style={styles.sectionList}>
-          <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-            <SectionList
-              sections={groups}
-              ref={messageListRef}
-              renderItem={renderMessage}
-              renderSectionHeader={renderSection}
-              keyExtractor={keyExtractor}
-              automaticallyAdjustKeyboardInsets={true}
-              automaticallyAdjustContentInsets={true}
-              onContentSizeChange={contentSizeChange}
-              getItemLayout={getItemLayout}
+        <View style={styles.container}>
+          <View style={styles.sectionList}>
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+              <SectionList
+                sections={groups}
+                ref={messageListRef}
+                renderItem={renderMessage}
+                renderSectionHeader={renderSection}
+                keyExtractor={keyExtractor}
+                automaticallyAdjustKeyboardInsets={true}
+                automaticallyAdjustContentInsets={true}
+                onContentSizeChange={contentSizeChange}
+                getItemLayout={getItemLayout}
+              />
+            </TouchableWithoutFeedback>
+          </View>
+          <View style={styles.sendBox}>
+            <SendBox
+              conversationId={conversationId}
+              conversationName={conversationName}
+              userId={userId}
+              sendMessage={doSend}
             />
-          </TouchableWithoutFeedback>
-        </View>
-        <View style={styles.sendBox}>
-          <SendBox
-            conversationId={conversationId}
-            conversationName={conversationName}
-            userId={userId}
-            sendMessage={doSend}
-          />
+          </View>
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
 
+// change backgroun to lightcyan
 // Co-locate styles. https://github.com/thoughtbot/react-native-typescript-styles/blob/main/STYLE_GUIDE.md
 const styles = StyleSheet.create({
-  container: {
+  safeview: {
+    backgroundColor: 'orange',
+    flex: 1,
+  },
+  keyboard: {
     flex: 1,
     backgroundColor: 'lightgray',
     alignContent: 'flex-start',
+    width: '100%',
+    height: '100%',
+    alignItems: 'stretch',
+    justifyContent: 'space-between',
+  },
+  container: {
+    display: 'flex',
+    backgroundColor: 'yellow',
+    width: '100%',
+    height: '100%',
   },
   sectionList: {
     backgroundColor: 'lightcoral',
     flex: 1,
-    marginTop: 0,
   },
   sendBox: {
-    justifyContent: 'flex-end',
+    width: '100%',
+  },
+  header: {
+    width: '100%',
   },
 });

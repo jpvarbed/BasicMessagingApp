@@ -22,11 +22,6 @@ export function MessageItem(props: {message: Message}) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    width: '100%',
-    height: 50,
-    backgroundColor: 'lightcyan',
-  },
   gif: {
     flex: 1,
     height: MEDIA_HEIGHT,

@@ -17,22 +17,6 @@ import {
   GiphyMedia,
 } from '@giphy/react-native-sdk';
 
-// const gifURL = 'https://api.giphy.com/v1/gifs/trending';
-// const GIF_LIMIT = 50;
-// const fetchURL =
-//   gifURL + '?api_key=' + APIKEY.toLowerCase() + '&limit=' + GIF_LIMIT;
-
-// async function fetchTrending() {
-//   try {
-//     console.log(fetchURL);
-//     let response = await fetch(fetchURL, {});
-//     let json = await response.json();
-//     return json;
-//   } catch (error) {
-//     console.error(error);
-//   }
-// }
-
 const APIKEY = '76792192255c42c3a11c58ea1acfbe27';
 GiphySDK.configure({apiKey: APIKEY});
 
@@ -70,10 +54,14 @@ export function SendBox(props: {
     props.sendMessage(sendRequest);
   };
 
+  // The gif button has been hit on the sendbox.
+  // Show the tray.
   const gifHit = () => {
     setShowGiphy(!showGiphy);
   };
 
+  // A gif has been selected from the tray.
+  // Close tray, send media message.
   const gifChosen = (
     e: NativeSyntheticEvent<{
       media: GiphyMedia;
@@ -95,7 +83,7 @@ export function SendBox(props: {
   };
 
   return (
-    <SafeAreaView>
+    <View>
       {showGiphy && (
         <GiphyGridView
           content={GiphyContent.trendingGifs()}
@@ -114,15 +102,21 @@ export function SendBox(props: {
             value={input}
             onChangeText={inputText}
           />
-          <TouchableOpacity activeOpacity={0.85} onPress={hitSend}>
+          <TouchableOpacity
+            style={styles.buttonStyle}
+            activeOpacity={0.85}
+            onPress={hitSend}>
             <Text>Send</Text>
           </TouchableOpacity>
-          <TouchableOpacity activeOpacity={0.85} onPress={gifHit}>
+          <TouchableOpacity
+            style={styles.buttonStyle}
+            activeOpacity={0.85}
+            onPress={gifHit}>
             <Text>GIF</Text>
           </TouchableOpacity>
         </View>
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -130,15 +124,19 @@ export function SendBox(props: {
 const styles = StyleSheet.create({
   container: {
     width: '100%',
-    height: 50,
+    height: 60,
     backgroundColor: 'lightcyan',
   },
   sendBox: {
     flex: 1,
-    height: 30,
+    height: '100%',
+    alignItems: 'center',
     flexDirection: 'row',
   },
-  input: {flex: 1, fontSize: 20, color: 'black'},
+  buttonStyle: {
+    flex: 1,
+  },
+  input: {flex: 5, fontSize: 20, color: 'black'},
   title: {
     fontSize: 20,
     fontWeight: 'bold',

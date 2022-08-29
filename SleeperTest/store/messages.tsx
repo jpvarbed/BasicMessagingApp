@@ -56,20 +56,15 @@ export const useStore = create<MessageStore>()(
         sendMessage: (messageRequest: LocalSendRequest) => {
           const conversationId = messageRequest.conversationId;
 
-          console.log('send message ' + conversationId);
-
           set(state => {
             let writeableDraft =
               state.message.conversations.get(conversationId)!;
             const messageId = writeableDraft.nextMessageId++;
-            console.log('increment id');
             const newMessage = createMessageFromRequest(
               messageId,
               messageRequest,
             );
-            console.log('add to messages');
             writeableDraft.messages.set(messageId, newMessage);
-            console.log('update list');
           });
         },
         addConversation: (conversationName: string) => {
