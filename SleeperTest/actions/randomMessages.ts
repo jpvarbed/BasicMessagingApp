@@ -10,6 +10,7 @@ const TEXT_INPUT = [
   "I'm going 0 rb",
   "I'll trade you",
   'The Lions rb situation is tempting',
+  'I need a really long message to verify wrapping behavior. This should be good enough. Typewriter. Snarfle. Baloney. Hats',
 ];
 
 export function randomMessageSend(conversationId: string): LocalSendRequest {

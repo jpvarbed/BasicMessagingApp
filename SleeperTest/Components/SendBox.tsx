@@ -101,6 +101,7 @@ export function SendBox(props: {
             numberOfLines={2}
             value={input}
             onChangeText={inputText}
+            onSubmitEditing={hitSend}
           />
           <TouchableOpacity
             style={styles.buttonStyle}

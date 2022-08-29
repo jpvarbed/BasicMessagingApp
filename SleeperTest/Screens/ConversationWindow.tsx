@@ -1,5 +1,5 @@
 import {useNavigation, useRoute} from '@react-navigation/native';
-import React, {useEffect, useRef} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
   Keyboard,
   KeyboardAvoidingView,
@@ -95,6 +95,8 @@ export function ConversationWindow() {
   const conversationId = conversationNameToId.get(conversationName)!;
   const messageListRef =
     useRef<SectionList<Message, SectionListMessageGroup>>(null);
+  // Scroll to most recent message unless the user scrolls
+  const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
 
   console.log(
     'Enter conversation: ' + conversationName + ' id ' + conversationId,
@@ -138,6 +140,9 @@ export function ConversationWindow() {
   };
 
   const contentSizeChange = () => {
+    if (!shouldAutoScroll) {
+      return;
+    }
     const groupLength = groups.length - 1;
     if (groupLength < 0) {
       return;
@@ -194,6 +199,9 @@ export function ConversationWindow() {
                 automaticallyAdjustContentInsets={true}
                 onContentSizeChange={contentSizeChange}
                 getItemLayout={getItemLayout}
+                stickySectionHeadersEnabled={false}
+                onScroll={() => setShouldAutoScroll(false)}
+                onEndReached={() => setShouldAutoScroll(true)}
               />
             </TouchableWithoutFeedback>
           </View>
