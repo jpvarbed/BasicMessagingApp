@@ -164,12 +164,17 @@ export function ConversationWindow() {
     });
   };
 
-  //
+  // When a new message arrives, this scrolls us down.
   const contentSizeChange = () => {
     if (!shouldAutoScroll) {
       return;
     }
     scrollToBottom();
+  };
+
+  const clickedOnList = () => {
+    Keyboard.dismiss;
+    setShowGiphy(false);
   };
 
   return (
@@ -184,7 +189,7 @@ export function ConversationWindow() {
         />
         <View style={styles.container}>
           <View style={styles.sectionList}>
-            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+            <TouchableWithoutFeedback onPress={clickedOnList}>
               <SectionList
                 sections={groups}
                 ref={messageListRef}
@@ -228,11 +233,12 @@ export function ConversationWindow() {
 // Co-locate styles. https://github.com/thoughtbot/react-native-typescript-styles/blob/main/STYLE_GUIDE.md
 const styles = StyleSheet.create({
   safeview: {
+    backgroundColor: 'lightcyan',
     flex: 1,
   },
   keyboard: {
     flex: 1,
-    backgroundColor: 'lightgray',
+    backgroundColor: 'lightcyan',
     alignContent: 'flex-start',
     width: '100%',
     height: '100%',
@@ -248,7 +254,7 @@ const styles = StyleSheet.create({
     height: '40%',
   },
   sectionList: {
-    backgroundColor: 'lightcoral',
+    backgroundColor: 'white',
     flex: 1,
   },
   sendBox: {width: '100%', marginBottom: 15},
