@@ -1,9 +1,12 @@
 import React, {useState} from 'react';
 import {
   Button,
+  Image,
   SafeAreaView,
   ScrollView,
   StatusBar,
+  StyleSheet,
+  Text,
   TextInput,
   View,
 } from 'react-native';
@@ -27,7 +30,12 @@ export function HomeScreen({navigation}: HomeScreenProp) {
   };
 
   return (
-    <SafeAreaView>
+    <SafeAreaView style={styles.safeview}>
+      <Text style={styles.title}>Jason Chat</Text>
+      <Image
+        style={styles.icon}
+        source={require('../resources/images/HomeScreen.png')}
+      />
       <StatusBar barStyle={'light-content'} />
       <ScrollView contentInsetAdjustmentBehavior="automatic">
         <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
@@ -44,3 +52,19 @@ export function HomeScreen({navigation}: HomeScreenProp) {
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  safeview: {
+    backgroundColor: 'lightcyan',
+    flex: 1,
+    alignItems: 'center',
+  },
+  title: {
+    fontWeight: 'bold',
+    fontSize: 50,
+  },
+  icon: {
+    height: 200,
+    width: 200,
+  },
+});
