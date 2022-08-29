@@ -104,6 +104,8 @@ export function ConversationWindow() {
 
   const doSend = (sendRequest: LocalSendRequest) => {
     sendMessage(sendRequest);
+    scrollToBottom();
+    setShouldAutoScroll(true);
   };
 
   useEffect(() => {
@@ -139,10 +141,7 @@ export function ConversationWindow() {
     return item.messageId.toString() + index.toString();
   };
 
-  const contentSizeChange = () => {
-    if (!shouldAutoScroll) {
-      return;
-    }
+  const scrollToBottom = () => {
     const groupLength = groups.length - 1;
     if (groupLength < 0) {
       return;
@@ -156,13 +155,21 @@ export function ConversationWindow() {
     });
   };
 
+  //
+  const contentSizeChange = () => {
+    if (!shouldAutoScroll) {
+      return;
+    }
+    scrollToBottom();
+  };
+
   // Length is the height of the row
   // Offset: distance in pixels of this row from the top.
   // index: current row index
-
+  // We use a helper that gives an estimate of height based on what's in each cell & section header.
+  // This is what lets us scroll.
   const getItemLayout = helper({
     getItemHeight: (rowData: Message): number => {
-      // Should do a better calculation on text size.
       switch (rowData.messageType) {
         case MessageType.text: {
           return 40;
@@ -181,7 +188,8 @@ export function ConversationWindow() {
     <SafeAreaView style={styles.safeview}>
       <KeyboardAvoidingView
         style={styles.keyboard}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={20}>
         <ConversationHeader
           conversationName={conversationName}
           goBack={nav.goBack}
@@ -223,7 +231,6 @@ export function ConversationWindow() {
 // Co-locate styles. https://github.com/thoughtbot/react-native-typescript-styles/blob/main/STYLE_GUIDE.md
 const styles = StyleSheet.create({
   safeview: {
-    backgroundColor: 'orange',
     flex: 1,
   },
   keyboard: {
@@ -237,7 +244,6 @@ const styles = StyleSheet.create({
   },
   container: {
     display: 'flex',
-    backgroundColor: 'yellow',
     width: '100%',
     height: '100%',
   },
@@ -247,6 +253,7 @@ const styles = StyleSheet.create({
   },
   sendBox: {
     width: '100%',
+    marginBottom: 15,
   },
   header: {
     width: '100%',

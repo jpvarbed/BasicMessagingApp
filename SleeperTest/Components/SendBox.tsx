@@ -1,7 +1,6 @@
 import React, {useState} from 'react';
 import {
   NativeSyntheticEvent,
-  SafeAreaView,
   StyleSheet,
   Text,
   TextInput,
@@ -23,7 +22,6 @@ GiphySDK.configure({apiKey: APIKEY});
 /*
 Handles input of new message data.
 */
-//(sendRequest: LocalSendRequest)
 export function SendBox(props: {
   userId: number;
   conversationId: string;
@@ -39,6 +37,9 @@ export function SendBox(props: {
   };
 
   const hitSend = () => {
+    if (!input.length) {
+      return;
+    }
     console.log('hit send' + input);
     const content = {text: input};
     setInput('');
@@ -88,7 +89,7 @@ export function SendBox(props: {
         <GiphyGridView
           content={GiphyContent.trendingGifs()}
           cellPadding={3}
-          style={{height: 400}}
+          style={styles.giphyDrawer}
           onMediaSelect={gifChosen}
         />
       )}
@@ -101,7 +102,6 @@ export function SendBox(props: {
             numberOfLines={2}
             value={input}
             onChangeText={inputText}
-            onSubmitEditing={hitSend}
           />
           <TouchableOpacity
             style={styles.buttonStyle}
@@ -136,6 +136,9 @@ const styles = StyleSheet.create({
   },
   buttonStyle: {
     flex: 1,
+  },
+  giphyDrawer: {
+    height: '40%',
   },
   input: {flex: 5, fontSize: 20, color: 'black'},
   title: {
