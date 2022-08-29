@@ -106,7 +106,6 @@ export function ConversationWindow() {
 
   // ------ rendering of list -------
   const groups = buildMessageGroups(messages);
-  console.log('groups' + groups.length);
 
   const renderMessage = (
     item: SectionListRenderItemInfo<Message, SectionListMessageGroup>,
@@ -179,6 +178,7 @@ export function ConversationWindow() {
     if (!shouldAutoScroll || showGiphy || keyboardStatus) {
       return;
     }
+    scrollToBottom();
   };
 
   const clickedOnList = () => {
@@ -187,7 +187,6 @@ export function ConversationWindow() {
   };
 
   const endReached = () => {
-    console.log('end reached');
     setShouldAutoScroll(true);
   };
 
@@ -196,11 +195,19 @@ export function ConversationWindow() {
   // This isn't technically correct as a user could scroll up then down to look at something.
   // A better solution would combine state to determine if the scroll was from the user or from our
   // 'scrolltobottom'
+  const [verticalScrollOffset, setVerticalScrollOffset] = useState<number>(0);
   const scrolled = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    if (event.nativeEvent.contentOffset.y < 0) {
-      console.log('set auto off');
-      setShouldAutoScroll(false);
+    const eventOffset = event.nativeEvent.contentOffset.y;
+    if (verticalScrollOffset === 0) {
+      setVerticalScrollOffset(eventOffset);
+      return;
     }
+
+    const downScroll = eventOffset < verticalScrollOffset;
+    setVerticalScrollOffset(eventOffset);
+    // if down scroll, set auto, if up turn it off
+    setShouldAutoScroll(downScroll);
+    console.log('set autoscroll' + downScroll);
   };
   return (
     <SafeAreaView style={styles.safeview}>

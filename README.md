@@ -30,6 +30,7 @@ You should just need to run:
 * Getting react native setup, fought zustand/immer/subscribe & sectionview.
 * Just made a bare minimum home screen.
 * Message sends are only stored locally.
+* Scroll behavior: If you scroll up, the scroll is paused, if you scroll down you get 'auto scroll' behavior.
 
 
 # Dependencies
