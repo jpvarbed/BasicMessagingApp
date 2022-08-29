@@ -1,5 +1,5 @@
 import {useNavigation, useRoute} from '@react-navigation/native';
-import React, {useEffect, useLayoutEffect, useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
   Keyboard,
   KeyboardAvoidingView,
@@ -11,7 +11,6 @@ import {
   SectionListData,
   SectionListRenderItemInfo,
   StyleSheet,
-  Text,
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
@@ -41,7 +40,7 @@ import GetItemLayoutCalculation from './GetItemLayoutCalculation';
 const APIKEY = '76792192255c42c3a11c58ea1acfbe27';
 GiphySDK.configure({apiKey: APIKEY});
 
-const RANDOM_MESSAGE_TIME_MS = 15000;
+const RANDOM_MESSAGE_TIME_MS = 5000;
 const sendMessageSelector = (state: MessageStore) => state.message.sendMessage;
 const conversationsByNameSelector = (state: MessageStore) =>
   state.message.conversationNameToId;
@@ -61,15 +60,16 @@ export function ConversationWindow() {
   // We show giphy here since it will take up space in the top container.
   // We also want clicks outside of it to close the drawer.
   const [showGiphy, setShowGiphy] = useState(false);
+  const [keyboardStatus, setKeyboardStatus] = useState(false);
 
   console.log(
     'Enter conversation: ' + conversationName + ' id ' + conversationId,
   );
 
   // ----- sending messages-------
-  const doSend = (sendRequest: LocalSendRequest) => {
+  const realSend = (sendRequest: LocalSendRequest) => {
     sendMessage(sendRequest);
-    scrollToBottom();
+    scrollToBottom(true);
     setShouldAutoScroll(true);
   };
 
@@ -91,7 +91,7 @@ export function ConversationWindow() {
       senderId: userId,
       timestampMS: Date.now(),
     };
-    sendMessage(sendRequest);
+    realSend(sendRequest);
   };
 
   useEffect(() => {
@@ -145,33 +145,40 @@ export function ConversationWindow() {
         }
       }
     },
-    getSectionHeaderHeight: () => {
+    getSectionFooterHeight: () => {
       return AVATAR_HEIGHT;
     },
   });
 
   //------- Handle auto scroll of list ------
+  useEffect(() => {
+    const showSubscription = Keyboard.addListener('keyboardDidShow', () => {
+      setKeyboardStatus(true);
+    });
+    const hideSubscription = Keyboard.addListener('keyboardDidHide', () => {
+      setKeyboardStatus(false);
+    });
 
-  const scrollToBottom = () => {
-    const groupLength = groups.length - 1;
-    if (groupLength < 0) {
-      return;
-    }
-    const lastMessageInLastGroup = groups[groupLength].data.length - 1;
-    console.log('scroll to ' + lastMessageInLastGroup + ' group' + groupLength);
+    return () => {
+      showSubscription.remove();
+      hideSubscription.remove();
+    };
+  }, []);
+
+  const scrollToBottom = (animated: boolean) => {
     messageListRef.current?.scrollToLocation({
-      viewPosition: 1,
-      itemIndex: lastMessageInLastGroup,
-      sectionIndex: groupLength,
+      viewPosition: 0,
+      itemIndex: 0,
+      sectionIndex: 0,
+      animated: animated,
     });
   };
 
   // When a new message arrives, this scrolls us down if the user hasn't scrolled.
   const contentSizeChange = () => {
-    if (!shouldAutoScroll) {
+    if (!shouldAutoScroll || showGiphy || keyboardStatus) {
       return;
     }
-    scrollToBottom();
   };
 
   const clickedOnList = () => {
@@ -212,7 +219,7 @@ export function ConversationWindow() {
                 sections={groups}
                 ref={messageListRef}
                 renderItem={renderMessage}
-                renderSectionHeader={renderSection}
+                renderSectionFooter={renderSection}
                 keyExtractor={keyExtractor}
                 automaticallyAdjustKeyboardInsets={true}
                 automaticallyAdjustContentInsets={true}
@@ -221,6 +228,7 @@ export function ConversationWindow() {
                 stickySectionHeadersEnabled={false}
                 onScroll={scrolled}
                 onEndReached={endReached}
+                inverted={true}
               />
             </TouchableWithoutFeedback>
           </View>
@@ -237,7 +245,7 @@ export function ConversationWindow() {
               conversationId={conversationId}
               conversationName={conversationName}
               userId={userId}
-              sendMessage={doSend}
+              sendMessage={realSend}
               setShowGiphy={setShowGiphy}
             />
           </View>

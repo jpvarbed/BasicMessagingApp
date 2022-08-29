@@ -1,6 +1,5 @@
 import React from 'react';
 import {Button, StyleSheet, Text, View} from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
 import {LineBorder} from './LineBorder';
 
 // In the real world you would want to handle sending, failed, acked, and have a wrapper for cell and content

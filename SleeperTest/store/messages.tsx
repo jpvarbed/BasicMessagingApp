@@ -114,7 +114,11 @@ export const getMessagesSelector = (conversationId: string) =>
     (state: MessageStore) =>
       conversationWithMessagesSelector(state, conversationId),
     conversationState =>
-      conversationState ? Array.from(conversationState.messages.values()) : [],
+      conversationState
+        ? Array.from(conversationState.messages.values()).sort((a, b) =>
+            Number(b.messageId - a.messageId),
+          )
+        : [],
   );
 
 // Fetch all messages. Ignore pagination. Would pass back a fcn to keep going.
