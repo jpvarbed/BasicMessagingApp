@@ -1,6 +1,7 @@
 import {useNavigation, useRoute} from '@react-navigation/native';
 import React, {useEffect, useRef} from 'react';
 import {
+  Keyboard,
   KeyboardAvoidingView,
   Platform,
   SafeAreaView,
@@ -8,6 +9,7 @@ import {
   SectionListData,
   SectionListRenderItemInfo,
   StyleSheet,
+  TouchableWithoutFeedback,
   View,
 } from 'react-native';
 import {randomMessageSend} from '../actions/randomMessages';
@@ -136,6 +138,9 @@ export function ConversationWindow() {
 
   const contentSizeChange = () => {
     const groupLength = groups.length - 1;
+    if (groupLength < 0) {
+      return;
+    }
     const lastMessageInLastGroup = groups[groupLength].data.length - 1;
     messageListRef.current?.scrollToLocation({
       viewPosition: 1,
@@ -172,17 +177,19 @@ export function ConversationWindow() {
           goBack={nav.goBack}
         />
         <View style={styles.sectionList}>
-          <SectionList
-            sections={groups}
-            ref={messageListRef}
-            renderItem={renderMessage}
-            renderSectionHeader={renderSection}
-            keyExtractor={keyExtractor}
-            automaticallyAdjustKeyboardInsets={true}
-            automaticallyAdjustContentInsets={true}
-            onContentSizeChange={contentSizeChange}
-            getItemLayout={getItemLayout}
-          />
+          <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+            <SectionList
+              sections={groups}
+              ref={messageListRef}
+              renderItem={renderMessage}
+              renderSectionHeader={renderSection}
+              keyExtractor={keyExtractor}
+              automaticallyAdjustKeyboardInsets={true}
+              automaticallyAdjustContentInsets={true}
+              onContentSizeChange={contentSizeChange}
+              getItemLayout={getItemLayout}
+            />
+          </TouchableWithoutFeedback>
         </View>
         <View style={styles.sendBox}>
           <SendBox

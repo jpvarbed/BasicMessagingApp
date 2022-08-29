@@ -15,7 +15,7 @@ const TEXT_INPUT = [
 export function randomMessageSend(conversationId: string): LocalSendRequest {
   const rand = Math.random();
   const peopleIndex = Math.round((USERS.size - 1) * rand);
-  const textInputIndex = Math.round(TEXT_INPUT.length * rand);
+  const textInputIndex = Math.round((TEXT_INPUT.length - 1) * rand);
   return {
     conversationId: conversationId,
     senderId: USERS.get(peopleIndex)!.userId,
