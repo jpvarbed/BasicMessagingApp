@@ -1,8 +1,9 @@
 import {useNavigation, useRoute} from '@react-navigation/native';
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useLayoutEffect, useRef, useState} from 'react';
 import {
   Keyboard,
   KeyboardAvoidingView,
+  NativeScrollEvent,
   NativeSyntheticEvent,
   Platform,
   SafeAreaView,
@@ -150,6 +151,7 @@ export function ConversationWindow() {
   });
 
   //------- Handle auto scroll of list ------
+
   const scrollToBottom = () => {
     const groupLength = groups.length - 1;
     if (groupLength < 0) {
@@ -164,7 +166,7 @@ export function ConversationWindow() {
     });
   };
 
-  // When a new message arrives, this scrolls us down.
+  // When a new message arrives, this scrolls us down if the user hasn't scrolled.
   const contentSizeChange = () => {
     if (!shouldAutoScroll) {
       return;
@@ -177,6 +179,22 @@ export function ConversationWindow() {
     setShowGiphy(false);
   };
 
+  const endReached = () => {
+    console.log('end reached');
+    setShouldAutoScroll(true);
+  };
+
+  // If the user scrolls up, disable auto scroll.
+  // We cannot easily tell if its the user so we look to see if there's an up scroll.
+  // This isn't technically correct as a user could scroll up then down to look at something.
+  // A better solution would combine state to determine if the scroll was from the user or from our
+  // 'scrolltobottom'
+  const scrolled = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    if (event.nativeEvent.contentOffset.y < 0) {
+      console.log('set auto off');
+      setShouldAutoScroll(false);
+    }
+  };
   return (
     <SafeAreaView style={styles.safeview}>
       <KeyboardAvoidingView
@@ -201,8 +219,8 @@ export function ConversationWindow() {
                 onContentSizeChange={contentSizeChange}
                 getItemLayout={getItemLayout}
                 stickySectionHeadersEnabled={false}
-                onScroll={() => setShouldAutoScroll(false)}
-                onEndReached={() => setShouldAutoScroll(true)}
+                onScroll={scrolled}
+                onEndReached={endReached}
               />
             </TouchableWithoutFeedback>
           </View>
