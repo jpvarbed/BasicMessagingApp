@@ -64,7 +64,6 @@ export function SendBox(props: {
             numberOfLines={2}
             value={input}
             onChangeText={inputText}
-            autoFocus={true}
           />
           <TouchableOpacity
             style={styles.buttonStyle}

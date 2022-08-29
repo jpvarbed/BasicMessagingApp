@@ -165,6 +165,9 @@ export function ConversationWindow() {
   }, []);
 
   const scrollToBottom = (animated: boolean) => {
+    if (!groups.length) {
+      return;
+    }
     messageListRef.current?.scrollToLocation({
       viewPosition: 0,
       itemIndex: 0,
@@ -214,7 +217,7 @@ export function ConversationWindow() {
       <KeyboardAvoidingView
         style={styles.keyboard}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={20}>
+        keyboardVerticalOffset={60}>
         <ConversationHeader
           conversationName={conversationName}
           goBack={nav.goBack}
