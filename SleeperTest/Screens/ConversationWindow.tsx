@@ -178,7 +178,7 @@ export function ConversationWindow() {
     if (!shouldAutoScroll || showGiphy || keyboardStatus) {
       return;
     }
-    scrollToBottom();
+    scrollToBottom(true);
   };
 
   const clickedOnList = () => {

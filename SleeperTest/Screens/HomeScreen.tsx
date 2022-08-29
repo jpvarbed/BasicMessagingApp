@@ -1,6 +1,5 @@
 import React, {useState} from 'react';
 import {
-  FlatList,
   Image,
   SafeAreaView,
   StyleSheet,
@@ -39,6 +38,7 @@ export function HomeScreen({navigation}: HomeScreenProp) {
         <TextInput
           style={styles.createInput}
           value={conversationName}
+          autoFocus={true}
           onChangeText={text => setConversationName(text)}
         />
         <TouchableOpacity

@@ -31,6 +31,7 @@ You should just need to run:
 * Just made a bare minimum home screen.
 * Message sends are only stored locally.
 * Scroll behavior: If you scroll up, the scroll is paused, if you scroll down you get 'auto scroll' behavior.
+* I only validated left to right, light mode, ios, english with no localization. A full app would use IntlShape & RTL aware flex/margin settings. You would also have switches for all of your colors/icons based on light/dark mode in a global css file.
 
 
 # Dependencies

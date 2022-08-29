@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
+import {useEffect} from 'react';
 import {
-  NativeSyntheticEvent,
+  Keyboard,
   StyleSheet,
   Text,
   TextInput,
@@ -63,6 +64,7 @@ export function SendBox(props: {
             numberOfLines={2}
             value={input}
             onChangeText={inputText}
+            autoFocus={true}
           />
           <TouchableOpacity
             style={styles.buttonStyle}
