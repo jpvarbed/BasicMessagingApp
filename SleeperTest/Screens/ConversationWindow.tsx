@@ -1,5 +1,5 @@
 import {useNavigation, useRoute} from '@react-navigation/native';
-import React, {useEffect} from 'react';
+import React, {useEffect, useRef} from 'react';
 import {
   KeyboardAvoidingView,
   Platform,
@@ -13,20 +13,24 @@ import {
 import {randomMessageSend} from '../actions/randomMessages';
 import {ConversationHeader} from '../Components/ConversationHeader';
 import {MessageGroup} from '../Components/MessageGroup';
-import {MessageItem} from '../Components/MessageItem';
+import {MEDIA_HEIGHT, MessageItem} from '../Components/MessageItem';
 import {SendBox} from '../Components/SendBox';
 import {tsToDateString} from '../helpers';
 import {MessageStore, useMessages, useStore} from '../store/messages';
-import {ConversationWindowRouteProp, LocalSendRequest, Message} from '../types';
-
-import sectionListGetItemLayout from 'react-native-section-list-get-item-layout';
+import {
+  ConversationWindowRouteProp,
+  LocalSendRequest,
+  Message,
+  MessageType,
+} from '../types';
+import helper from './helper';
 
 const RANDOM_MESSAGE_TIME_MS = 15000;
 const sendMessageSelector = (state: MessageStore) => state.message.sendMessage;
 const conversationsByNameSelector = (state: MessageStore) =>
   state.message.conversationNameToId;
 
-type SectionListMessageGroup = {
+export type SectionListMessageGroup = {
   senderId: number; // Should this be user?
   dateString: string;
   readonly data: Message[];
@@ -77,6 +81,7 @@ function buildMessageGroups(messages: Message[]): SectionListMessageGroup[] {
 
 // should i use https://yarnpkg.com/package/react-native-section-list-get-item-layout
 // or super grid https://yarnpkg.com/package/react-native-super-grid
+// hook up scrolling via onendreached and scroll position
 export function ConversationWindow() {
   const nav = useNavigation();
   const route = useRoute<ConversationWindowRouteProp>();
@@ -85,6 +90,8 @@ export function ConversationWindow() {
   const sendMessage = useStore(sendMessageSelector);
   const conversationNameToId = useStore(conversationsByNameSelector);
   const conversationId = conversationNameToId.get(conversationName)!;
+  const messageListRef =
+    useRef<SectionList<Message, SectionListMessageGroup>>(null);
 
   console.log(
     'Enter conversation: ' + conversationName + ' id ' + conversationId,
@@ -123,10 +130,37 @@ export function ConversationWindow() {
       />
     );
   };
-
   const keyExtractor = (item: Message, index: number): string => {
     return item.messageId.toString() + index.toString();
   };
+
+  const contentSizeChange = () => {
+    const groupLength = groups.length - 1;
+    const lastMessageInLastGroup = groups[groupLength].data.length - 1;
+    messageListRef.current?.scrollToLocation({
+      viewPosition: 1,
+      itemIndex: lastMessageInLastGroup,
+      sectionIndex: groupLength,
+    });
+  };
+
+  // Length is the height of the row
+  // Offset: distance in pixels of this row from the top.
+  // index: current row index
+
+  const getItemLayout = helper({
+    getItemHeight: (rowData: Message): number => {
+      // Should do a better calculation on text size.
+      switch (rowData.messageType) {
+        case MessageType.text: {
+          return 40;
+        }
+        case MessageType.giphyGif: {
+          return MEDIA_HEIGHT;
+        }
+      }
+    },
+  });
 
   return (
     <SafeAreaView style={styles.container}>
@@ -140,11 +174,14 @@ export function ConversationWindow() {
         <View style={styles.sectionList}>
           <SectionList
             sections={groups}
+            ref={messageListRef}
             renderItem={renderMessage}
             renderSectionHeader={renderSection}
             keyExtractor={keyExtractor}
             automaticallyAdjustKeyboardInsets={true}
             automaticallyAdjustContentInsets={true}
+            onContentSizeChange={contentSizeChange}
+            getItemLayout={getItemLayout}
           />
         </View>
         <View style={styles.sendBox}>
