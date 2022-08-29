@@ -3,6 +3,7 @@ import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import type {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {ImageRequireSource} from 'react-native';
 
+// ---- Nav Types ----
 // We have just two pages, Home & Conversation Window.
 export type RootStackParamList = {
   Home: undefined;
@@ -22,9 +23,9 @@ export type ConversationWindowRouteProp = RouteProp<
   'ConversationWindow'
 >;
 
+// --- Messaging/Business Logic Types ------
 // Store by id so that you may update a message if it changes.
 export type MessagesById = Map<number, Message>;
-
 export type ConversationId = string;
 export type ConversationsById = Map<ConversationId, ConversationWithMessages>;
 export type ConversationsByName = Map<string, ConversationId>;
@@ -81,3 +82,10 @@ export interface User {
   displayName: string;
   avatarURL: ImageRequireSource;
 }
+
+// ----- List Types -------
+export type SectionListMessageGroup = {
+  senderId: number; // Should this be user?
+  dateString: string;
+  readonly data: Message[];
+};

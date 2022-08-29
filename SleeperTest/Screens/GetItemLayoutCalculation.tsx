@@ -1,6 +1,5 @@
 import {SectionListData} from 'react-native';
-import {Message} from '../types';
-import {SectionListMessageGroup} from './ConversationWindow';
+import {Message, SectionListMessageGroup} from '../types';
 
 /*
 Modified from https://github.com/jsoendermann/rn-section-list-get-item-layout/blob/master/index.ts

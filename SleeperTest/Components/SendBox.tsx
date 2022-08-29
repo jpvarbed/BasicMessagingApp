@@ -9,15 +9,6 @@ import {
 } from 'react-native';
 import {LocalSendRequest, MessageType} from '../types';
 import {LineBorder} from './LineBorder';
-import {
-  GiphySDK,
-  GiphyGridView,
-  GiphyContent,
-  GiphyMedia,
-} from '@giphy/react-native-sdk';
-
-const APIKEY = '76792192255c42c3a11c58ea1acfbe27';
-GiphySDK.configure({apiKey: APIKEY});
 
 /*
 Handles input of new message data.
@@ -27,10 +18,10 @@ export function SendBox(props: {
   conversationId: string;
   conversationName: string;
   sendMessage: (sendRequest: LocalSendRequest) => void;
+  setShowGiphy: (showGiphy: boolean) => void;
 }) {
   //const textBoxPrompt = 'Send a message to... ' + props.conversationName;
   const [input, setInput] = useState('');
-  const [showGiphy, setShowGiphy] = useState(false);
 
   const inputText = (text: string) => {
     setInput(text);
@@ -58,41 +49,11 @@ export function SendBox(props: {
   // The gif button has been hit on the sendbox.
   // Show the tray.
   const gifHit = () => {
-    setShowGiphy(!showGiphy);
-  };
-
-  // A gif has been selected from the tray.
-  // Close tray, send media message.
-  const gifChosen = (
-    e: NativeSyntheticEvent<{
-      media: GiphyMedia;
-    }>,
-  ) => {
-    setShowGiphy(false);
-    const mediaUrl = e.nativeEvent.media.url;
-    const content = {mediaUrl: mediaUrl};
-    const conversationId = props.conversationId;
-    const messageType = MessageType.giphyGif;
-    const sendRequest = {
-      content: content,
-      conversationId: conversationId,
-      messageType: messageType,
-      senderId: props.userId,
-      timestampMS: Date.now(),
-    };
-    props.sendMessage(sendRequest);
+    props.setShowGiphy(true);
   };
 
   return (
     <View>
-      {showGiphy && (
-        <GiphyGridView
-          content={GiphyContent.trendingGifs()}
-          cellPadding={3}
-          style={styles.giphyDrawer}
-          onMediaSelect={gifChosen}
-        />
-      )}
       <View style={styles.container}>
         <LineBorder />
         <View style={styles.sendBox}>
@@ -136,9 +97,6 @@ const styles = StyleSheet.create({
   },
   buttonStyle: {
     flex: 1,
-  },
-  giphyDrawer: {
-    height: '40%',
   },
   input: {flex: 5, fontSize: 20, color: 'black'},
   title: {

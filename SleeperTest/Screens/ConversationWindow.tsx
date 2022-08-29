@@ -3,6 +3,7 @@ import React, {useEffect, useRef, useState} from 'react';
 import {
   Keyboard,
   KeyboardAvoidingView,
+  NativeSyntheticEvent,
   Platform,
   SafeAreaView,
   SectionList,
@@ -18,73 +19,32 @@ import {ConversationHeader} from '../Components/ConversationHeader';
 import {AVATAR_HEIGHT, MessageGroup} from '../Components/MessageGroup';
 import {MEDIA_HEIGHT, MessageItem} from '../Components/MessageItem';
 import {SendBox} from '../Components/SendBox';
-import {tsToDateString} from '../helpers';
 import {MessageStore, useMessages, useStore} from '../store/messages';
 import {
   ConversationWindowRouteProp,
   LocalSendRequest,
   Message,
   MessageType,
+  SectionListMessageGroup,
 } from '../types';
-import helper from './helper';
+
+import {
+  GiphySDK,
+  GiphyGridView,
+  GiphyContent,
+  GiphyMedia,
+} from '@giphy/react-native-sdk';
+import {buildMessageGroups} from './utils';
+import GetItemLayoutCalculation from './GetItemLayoutCalculation';
+
+const APIKEY = '76792192255c42c3a11c58ea1acfbe27';
+GiphySDK.configure({apiKey: APIKEY});
 
 const RANDOM_MESSAGE_TIME_MS = 15000;
 const sendMessageSelector = (state: MessageStore) => state.message.sendMessage;
 const conversationsByNameSelector = (state: MessageStore) =>
   state.message.conversationNameToId;
 
-export type SectionListMessageGroup = {
-  senderId: number; // Should this be user?
-  dateString: string;
-  readonly data: Message[];
-};
-
-// Returns true if this message belongs in the group.
-// Could expand this to more requirements.
-function messageBelongsInGroup(
-  group: SectionListMessageGroup,
-  message: Message,
-): boolean {
-  return group.senderId === message.senderId;
-}
-
-function makeGroupFromMessage(message: Message): SectionListMessageGroup {
-  return {
-    senderId: message.senderId,
-    data: [message],
-    dateString: tsToDateString(message.timestampMS),
-  };
-}
-
-// Create the message groups for the conversation
-// group by send and then order
-function buildMessageGroups(messages: Message[]): SectionListMessageGroup[] {
-  if (messages.length === 0) {
-    return [];
-  }
-
-  const groups = [];
-  const firstMessage = messages[0];
-  let currentGroup: SectionListMessageGroup =
-    makeGroupFromMessage(firstMessage);
-
-  for (let i = 1; i < messages.length; i++) {
-    const message = messages[i];
-    if (messageBelongsInGroup(currentGroup, message)) {
-      currentGroup.data.push(message);
-    } else {
-      // Group break everybody.
-      groups.push(currentGroup);
-      currentGroup = makeGroupFromMessage(message);
-    }
-  }
-  groups.push(currentGroup);
-  return groups;
-}
-
-// should i use https://yarnpkg.com/package/react-native-section-list-get-item-layout
-// or super grid https://yarnpkg.com/package/react-native-super-grid
-// hook up scrolling via onendreached and scroll position
 export function ConversationWindow() {
   const nav = useNavigation();
   const route = useRoute<ConversationWindowRouteProp>();
@@ -97,15 +57,40 @@ export function ConversationWindow() {
     useRef<SectionList<Message, SectionListMessageGroup>>(null);
   // Scroll to most recent message unless the user scrolls
   const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
+  // We show giphy here since it will take up space in the top container.
+  // We also want clicks outside of it to close the drawer.
+  const [showGiphy, setShowGiphy] = useState(false);
 
   console.log(
     'Enter conversation: ' + conversationName + ' id ' + conversationId,
   );
 
+  // ----- sending messages-------
   const doSend = (sendRequest: LocalSendRequest) => {
     sendMessage(sendRequest);
     scrollToBottom();
     setShouldAutoScroll(true);
+  };
+
+  // A gif has been selected from the tray.
+  // Close tray, send media message.
+  const gifChosen = (
+    e: NativeSyntheticEvent<{
+      media: GiphyMedia;
+    }>,
+  ) => {
+    setShowGiphy(false);
+    const mediaUrl = e.nativeEvent.media.url;
+    const content = {mediaUrl: mediaUrl};
+    const messageType = MessageType.giphyGif;
+    const sendRequest = {
+      content: content,
+      conversationId: conversationId,
+      messageType: messageType,
+      senderId: userId,
+      timestampMS: Date.now(),
+    };
+    sendMessage(sendRequest);
   };
 
   useEffect(() => {
@@ -118,6 +103,7 @@ export function ConversationWindow() {
   const messages = useMessages(conversationId);
   console.log(messages.length);
 
+  // ------ rendering of list -------
   const groups = buildMessageGroups(messages);
   console.log('groups' + groups.length);
 
@@ -137,10 +123,33 @@ export function ConversationWindow() {
       />
     );
   };
+
   const keyExtractor = (item: Message, index: number): string => {
     return item.messageId.toString() + index.toString();
   };
 
+  // Length is the height of the row
+  // Offset: distance in pixels of this row from the top.
+  // index: current row index
+  // We use a helper that gives an estimate of height based on what's in each cell & section header.
+  // This is what lets us scroll.
+  const getItemLayout = GetItemLayoutCalculation({
+    getItemHeight: (rowData: Message): number => {
+      switch (rowData.messageType) {
+        case MessageType.text: {
+          return 40;
+        }
+        case MessageType.giphyGif: {
+          return MEDIA_HEIGHT;
+        }
+      }
+    },
+    getSectionHeaderHeight: () => {
+      return AVATAR_HEIGHT;
+    },
+  });
+
+  //------- Handle auto scroll of list ------
   const scrollToBottom = () => {
     const groupLength = groups.length - 1;
     if (groupLength < 0) {
@@ -162,27 +171,6 @@ export function ConversationWindow() {
     }
     scrollToBottom();
   };
-
-  // Length is the height of the row
-  // Offset: distance in pixels of this row from the top.
-  // index: current row index
-  // We use a helper that gives an estimate of height based on what's in each cell & section header.
-  // This is what lets us scroll.
-  const getItemLayout = helper({
-    getItemHeight: (rowData: Message): number => {
-      switch (rowData.messageType) {
-        case MessageType.text: {
-          return 40;
-        }
-        case MessageType.giphyGif: {
-          return MEDIA_HEIGHT;
-        }
-      }
-    },
-    getSectionHeaderHeight: () => {
-      return AVATAR_HEIGHT;
-    },
-  });
 
   return (
     <SafeAreaView style={styles.safeview}>
@@ -213,12 +201,21 @@ export function ConversationWindow() {
               />
             </TouchableWithoutFeedback>
           </View>
+          {showGiphy && (
+            <GiphyGridView
+              content={GiphyContent.trendingGifs()}
+              cellPadding={3}
+              style={styles.giphyDrawer}
+              onMediaSelect={gifChosen}
+            />
+          )}
           <View style={styles.sendBox}>
             <SendBox
               conversationId={conversationId}
               conversationName={conversationName}
               userId={userId}
               sendMessage={doSend}
+              setShowGiphy={setShowGiphy}
             />
           </View>
         </View>
@@ -247,14 +244,14 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
+  giphyDrawer: {
+    height: '40%',
+  },
   sectionList: {
     backgroundColor: 'lightcoral',
     flex: 1,
   },
-  sendBox: {
-    width: '100%',
-    marginBottom: 15,
-  },
+  sendBox: {width: '100%', marginBottom: 15},
   header: {
     width: '100%',
   },
