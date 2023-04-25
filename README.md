@@ -1,5 +1,5 @@
-# sleepermessaging
-A simple messaging app.
+# Basic Messageing App
+A simple messaging app to try out react native
 
 ## How To Run
 I mostly followed the getting started docs. I tried to setup the rc's to cover bases.
